@@ -74,6 +74,7 @@ router.get('/:id/remedios', autenticar, controller.getRemedios)
 router.patch('/:pacienteId/remedios/:remedioId', autenticar, controller.updateRemedio)
 router.get('/:pacienteId/remedios/:remedioId', autenticar, controller.getRemedioById)
 router.get('/:pacienteId/remedios/:remedioId/ProximoConsumo', autenticar, controller.proximoConsumo)
+router.patch('/:pacienteId/remedios/:remedioId/consumir', autenticar, controller.consumir)
 router.post('/login', controller.login)
 
 module.exports = router

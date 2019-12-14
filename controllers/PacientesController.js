@@ -146,7 +146,13 @@ const updateRemedio = (request, response) => {
     {
       $set: {
         'remedios.$.nome': request.body.nome,
-        'remedios.$.foto': request.body.foto
+        'remedios.$.foto': request.body.foto,
+        'remedios.$.dataInicial': request.body.dataInicial,
+        'remedios.$.dataFinal': request.body.dataFinal,
+        'remedios.$.intervalo': request.body.intervalo,
+        'remedios.$.ultimoConsumo': request.body.ultimoConsumo,
+        'remedios.$.qtdRemedio':request.body.qtdRemedio,
+        'remedios.$.totalRemedio': request.body.totalRemedio
       }
     },
     options,
@@ -173,61 +179,70 @@ const getRemedioById = async (request, response) => {
   return response.status(200).send(remedio)
 }
 
-// const proximoConsumo = async (request, response) => {
-//   const pacienteId = request.params.pacienteId
-//   const remedioId = request.params.remedioId
-//   const paciente = await pacientesModel.findById(pacienteId)
-//   const remedio = paciente.remedios.find(remedio => remedio._id == remedioId)
-  
-//   //diferença em Horas entre duas datas
-//   const intervalo = remedio.intervalo;
-//   const datataAtual = new Date();
-//   console.log("hora atual: " + datataAtual)
-//   const dataUltimoConsumo = remedio.dataUltimoConsumo;
-//   console.log("dataUltimoConsumo: " + dataUltimoConsumo)
-
-//   const diferencaEmMilisegundos = datataAtual - dataUltimoConsumo;
-//   const diferencaEmHoras = Math.floor((diferencaEmMilisegundos % 86400000) / 3600000)
-
-
-//   if(diferencaEmHoras > intervalo){
-//     return response.status(200).send("Seu remédio está atrasado")
-//   } 
-//   else if(diferencaEmHoras < intervalo){
-//     return response.status(200).send("Ainda não esá na hora de tomar o remédio")
-//   } 
-//   else{
-//     return response.status(200).send("Está na hora de tomar seu remédio")
-//   }
-// }
-
-
 const proximoConsumo = async (request, response) => {
     const pacienteId = request.params.pacienteId
     const remedioId = request.params.remedioId
     const paciente = await pacientesModel.findById(pacienteId)
     const remedio = paciente.remedios.find(remedio => remedio._id == remedioId)
     
-    //diferença em Horas entre duas datas
     const intervalo = remedio.intervalo;
-    const dataAtual = moment().format();
-    console.log("hora atual: " + dataAtual)
-    const dataUltimoConsumo = moment(remedio.dataUltimoConsumo).format();
+    const dataAtual = moment();
+    console.log("hora atual: " + dataAtual.format());
+    const dataUltimoConsumo = moment(remedio.dataUltimoConsumo);
     console.log("dataUltimoConsumo: " + dataUltimoConsumo)
   
-    // const diferencaEmMilisegundos = datataAtual - dataUltimoConsumo;
-    // const diferencaEmHoras = Math.floor((diferencaEmMilisegundos % 86400000) / 3600000)
-   
-    const diffHora = dataAtual.moment(dataUltimoConsumo,'hours')
+    const diffHora = dataAtual.diff(dataUltimoConsumo,'hours')
   
     if(diffHora > intervalo){
-      return response.status(200).send("Seu remédio está atrasado")
+
+      return response.status(200).send({retorno: true, msg: "Seu remédio está atrasado"})
     } 
     else if(diffHora < intervalo){
       return response.status(200).send("Ainda não esá na hora de tomar o remédio")
     } 
     else{
       return response.status(200).send("Está na hora de tomar seu remédio")
+    }
+  }
+
+
+  const consumir = async (request, response) => {
+    const pacienteId = request.params.pacienteId
+    const remedioId = request.params.remedioId
+    const paciente = await pacientesModel.findById(pacienteId)
+    const remedio = paciente.remedios.find(remedio => remedio._id == remedioId)
+
+    const options = {new: true}
+  
+    let novoTotal = remedio.totalRemedio - remedio.qtdRemedio;
+    let dataAtual = moment().format()
+   console.log(remedio.totalRemedio >= remedio.qtdRemedio)
+
+    if ( remedio.totalRemedio >= remedio.qtdRemedio) {
+    pacientesModel.findOneAndUpdate(
+      { _id: pacienteId, 'remedios._id': remedioId },
+      {
+        $set: {
+          'remedios.$.ultimoConsumo': dataAtual,
+          'remedios.$.totalRemedio': novoTotal
+        }
+      },
+      options,
+      (error, paciente) => {
+        if (error) {
+          return response.status(500).send(error)
+        }
+  
+        if (paciente) {
+         
+            return response.status(200).send(paciente)
+
+        }
+        return response.status(404).send('Paciente não encontrado.')
+      }
+    )}
+    else{
+      return response.status(404).send('Não há remedios suficiente para consumo')
     }
   }
 
@@ -268,5 +283,6 @@ module.exports = {
   updateRemedio,
   getRemedioById,
   proximoConsumo,
+  consumir,
   login
 }
