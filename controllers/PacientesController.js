@@ -202,8 +202,17 @@ const proximoConsumo = async (request, response) => {
     const pacienteId = request.params.pacienteId
     const remedioId = request.params.remedioId
     const paciente = await pacientesModel.findById(pacienteId)
+
+    if (!paciente) {
+      return response.status(200).send('paciente não encontrado')
+    }
+
     const remedio = paciente.remedios.find(remedio => remedio._id == remedioId)
     
+    if (!remedio) {
+      return response.status(200).send('remédio não encontrado')
+    }
+
     let intervalo = remedio.intervalo * 60;
     let dataAtual = moment().subtract(1, "hours");
     console.log("hora atual: " + dataAtual.format());
@@ -214,8 +223,6 @@ const proximoConsumo = async (request, response) => {
     console.log(diffHora)
     let proxConsumo = dataUltimoConsumo.add(intervalo, 'minutes').format('HH:mm:ss')
 
-
-  
     if(diffHora > intervalo){
 
       return response.status(200).send({retorno: -1, msg: "Seu remédio está atrasado, você deveria ter tomado: " + proxConsumo})
@@ -231,13 +238,13 @@ const proximoConsumo = async (request, response) => {
 const estoqueRemedio = async (request, response) => {
   const pacienteId = request.params.pacienteId
   const paciente = await pacientesModel.findById(pacienteId)
-
-  const comprar = paciente.remedios.find((remedio) => {
-   return  (remedio.totalEstoqueRemedio  > (remedio.qtdConsumoRemedio * 2))
-  })
-  res.status(200).send(comprar)
+  const remedio = paciente.remedios.find(remedio => remedio.totalEstoqueRemedio == 0)
+  
+  if(remedio){
+    return response.status(200).send("Nome: " + remedio.nome + "\n Total em estoque: " + remedio.totalEstoqueRemedio + "\n");
+  }
+  return response.status(200).send("Todos os remédios possuem itens no estoque");
 }
-
 
   const consumir = async (request, response) => {
     const pacienteId = request.params.pacienteId
@@ -249,8 +256,8 @@ const estoqueRemedio = async (request, response) => {
   
     let novoTotal = remedio.totalEstoqueRemedio - remedio.qtdConsumoRemedio;
     let dataAtual = moment().subtract(3, "hours").format()
-    console.log(remedio.totalEstoqueRemedio >= remedio.qtdConsumoRemedio)
-
+    console.log(dataAtual);
+    console.log(remedio.totalEstoqueRemedio >= remedio.qtdConsumoRemedio);
 
     if ( remedio.totalEstoqueRemedio >= remedio.qtdConsumoRemedio) {
     pacientesModel.findOneAndUpdate(
