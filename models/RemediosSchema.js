@@ -8,8 +8,8 @@ const RemediosSchema = new Schema({
   dataFinal: {type: Date},
   intervalo: {type: Number},
   ultimoConsumo: {type: Date},
-  qtdRemedio:{type: Number},
-  totalRemedio:{type: Number}
+  qtdConsumoRemedio:{type: Number},
+  totalEstoqueRemedio:{type: Number}
 })
 
 const remediosModel = mongoose.model('remedios', RemediosSchema);

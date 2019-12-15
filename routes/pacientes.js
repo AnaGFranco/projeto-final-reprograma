@@ -63,8 +63,8 @@ const autenticarAdmin = (request, response, next) => {
   next()
 }
 
-router.get('', autenticar, controller.getAll)
-router.post('', autenticarAdmin, controller.add)
+router.get('', autenticarAdmin, controller.getAll)
+router.post('', autenticar, controller.add)
 router.post('/admin', controller.addAdmin)
 router.get('/:id', autenticar, controller.getById)
 router.patch('/:id', autenticar, controller.update)
@@ -73,8 +73,13 @@ router.post('/:pacienteId/remedios', autenticar, controller.addRemedio)
 router.get('/:id/remedios', autenticar, controller.getRemedios)
 router.patch('/:pacienteId/remedios/:remedioId', autenticar, controller.updateRemedio)
 router.get('/:pacienteId/remedios/:remedioId', autenticar, controller.getRemedioById)
+router.get('/:pacienteId/verificar', autenticar, controller.estoqueRemedio)
 router.get('/:pacienteId/remedios/:remedioId/ProximoConsumo', autenticar, controller.proximoConsumo)
 router.patch('/:pacienteId/remedios/:remedioId/consumir', autenticar, controller.consumir)
+router.delete('/:pacienteId/remedios/:remedioId', autenticar, controller.removeRemedio)
 router.post('/login', controller.login)
 
 module.exports = router
+
+
+

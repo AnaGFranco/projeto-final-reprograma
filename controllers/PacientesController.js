@@ -108,8 +108,10 @@ const addRemedio = async (request, response) => {
   const pacienteId = request.params.pacienteId
   const remedio = request.body
   const options = { new: true }
+
   const novoRemedio = new remediosModel(remedio)
   const paciente = await pacientesModel.findById(pacienteId)
+
 
   paciente.remedios.push(novoRemedio)
   paciente.save((error) => {
@@ -150,9 +152,8 @@ const updateRemedio = (request, response) => {
         'remedios.$.dataInicial': request.body.dataInicial,
         'remedios.$.dataFinal': request.body.dataFinal,
         'remedios.$.intervalo': request.body.intervalo,
-        'remedios.$.ultimoConsumo': request.body.ultimoConsumo,
-        'remedios.$.qtdRemedio':request.body.qtdRemedio,
-        'remedios.$.totalRemedio': request.body.totalRemedio
+        'remedios.$.qtdConsumoRemedio':request.body.qtdConsumoRemedio,
+        'remedios.$.totalEstoqueRemedio': request.body.totalEstoqueRemedio
       }
     },
     options,
@@ -179,31 +180,63 @@ const getRemedioById = async (request, response) => {
   return response.status(200).send(remedio)
 }
 
+const removeRemedio = async (request, response) => {
+  const pacienteId = request.params.pacienteId
+  const remedioId = request.params.remedioId
+  
+  const paciente = await pacientesModel.findById(pacienteId)
+  const remedio = paciente.remedios.find(remedio => remedio._id == remedioId)
+  
+  paciente.remedios.remove(remedio)
+  paciente.save((error) => {
+    if (error) {
+      return response.status(500).send(error)
+    }
+
+    return response.status(200).send("Remedio removido!")
+  })
+
+}
+
 const proximoConsumo = async (request, response) => {
     const pacienteId = request.params.pacienteId
     const remedioId = request.params.remedioId
     const paciente = await pacientesModel.findById(pacienteId)
     const remedio = paciente.remedios.find(remedio => remedio._id == remedioId)
     
-    const intervalo = remedio.intervalo;
-    const dataAtual = moment();
+    let intervalo = remedio.intervalo * 60;
+    let dataAtual = moment().subtract(1, "hours");
     console.log("hora atual: " + dataAtual.format());
-    const dataUltimoConsumo = moment(remedio.dataUltimoConsumo);
-    console.log("dataUltimoConsumo: " + dataUltimoConsumo)
+    let dataUltimoConsumo = moment(remedio.ultimoConsumo);
+    console.log("dataUltimoConsumo: " + dataUltimoConsumo.format())
   
-    const diffHora = dataAtual.diff(dataUltimoConsumo,'hours')
+    let diffHora = dataAtual.diff(dataUltimoConsumo,'minutes')
+    console.log(diffHora)
+    let proxConsumo = dataUltimoConsumo.add(intervalo, 'minutes').format('HH:mm:ss')
+
+
   
     if(diffHora > intervalo){
 
-      return response.status(200).send({retorno: true, msg: "Seu remédio está atrasado"})
+      return response.status(200).send({retorno: -1, msg: "Seu remédio está atrasado, você deveria ter tomado: " + proxConsumo})
     } 
     else if(diffHora < intervalo){
-      return response.status(200).send("Ainda não esá na hora de tomar o remédio")
+      return response.status(200).send({retorno: 0, msg: "Ainda não está na hora de tomar o remédio. Você deve tomar ás: " + proxConsumo })
     } 
     else{
-      return response.status(200).send("Está na hora de tomar seu remédio")
+      return response.status(200).send({retorno: 1, msg: "Está na hora de tomar seu remédio"})
     }
-  }
+}
+
+const estoqueRemedio = async (request, response) => {
+  const pacienteId = request.params.pacienteId
+  const paciente = await pacientesModel.findById(pacienteId)
+
+  const comprar = paciente.remedios.find((remedio) => {
+   return  (remedio.totalEstoqueRemedio  > (remedio.qtdConsumoRemedio * 2))
+  })
+  res.status(200).send(comprar)
+}
 
 
   const consumir = async (request, response) => {
@@ -214,17 +247,18 @@ const proximoConsumo = async (request, response) => {
 
     const options = {new: true}
   
-    let novoTotal = remedio.totalRemedio - remedio.qtdRemedio;
-    let dataAtual = moment().format()
-   console.log(remedio.totalRemedio >= remedio.qtdRemedio)
+    let novoTotal = remedio.totalEstoqueRemedio - remedio.qtdConsumoRemedio;
+    let dataAtual = moment().subtract(3, "hours").format()
+    console.log(remedio.totalEstoqueRemedio >= remedio.qtdConsumoRemedio)
 
-    if ( remedio.totalRemedio >= remedio.qtdRemedio) {
+
+    if ( remedio.totalEstoqueRemedio >= remedio.qtdConsumoRemedio) {
     pacientesModel.findOneAndUpdate(
       { _id: pacienteId, 'remedios._id': remedioId },
       {
         $set: {
           'remedios.$.ultimoConsumo': dataAtual,
-          'remedios.$.totalRemedio': novoTotal
+          'remedios.$.totalEstoqueRemedio': novoTotal
         }
       },
       options,
@@ -284,5 +318,8 @@ module.exports = {
   getRemedioById,
   proximoConsumo,
   consumir,
+  removeRemedio,
+  estoqueRemedio,
+
   login
 }
