@@ -4,11 +4,11 @@ const { remediosModel } = require('../models/RemediosSchema')
 const moment = require('moment');
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
-const SEGREDO = 'MIICXAIBAAKBgQCOl54HaBM/WiL/jPPdFGjm9f8VprUst1J+vs7G/YRGRHYLGqt+M/ljAhcROPy3FdaVi2smqqyZhf4d+EZ9lKM6LVed91sxvcyMFEp6x8R2KS9wIzUtJ6r1MAIKd8HURmbaN4V2TV/FLeOUANRCZ+QhYEy+eNbuVIJANYtXBUSn8QIDAQABAoGBAIuVS/MAJGdNuxjiSA5Q3mfIw03UhWIiirTb39rXbNbESbGRB/NguW38K8yGNoya6hY2BkwxowgeLKX11js0d5sSHgEgL+pDQtXshHu7vlYU0ksHwfmD/R8+ZHJH6F6L0vuzs4NoVK/8iQHFLboUjF2sORyuLHbBmFZQWhInet8pAkEA0OlL2uHCYhkNuokJ9H+OnJEqKS2BtYSkH3Hrh2opZg2HtvUtXEIxzmj/95CzxMXQtNJhQMK3ekvnF3Upcj2avwJBAK67i8OEKM2jerbFKrBqr6/kUkZeyHLA8I4L2C3/3nKPGUj/GAc2xxuK1XxnpC0e3Wqz5OMwzkWU4Ynblsdq2U8CQHu9U6LICbzVHh6YwP7C9xOhoBlXzPZZJGVDssA4j2DVLsednUqCIsIhy0s1uGUazi3sVpJnQwn7H1vzl6ME/j0CQAT7qj+4LCW5LM27j70aPcppW4NQPq0vHW0fn1moe2KO/CydwcSq5kC909rJZeA3ih755GQqRyeq2EfDMGidfncCQD770Za6sJP1/i1vcdoWuWYnhpiU8TNKjFb2vJEN598amcyJV9PlAAdEkszh6EDA76t6/yT6NoUn/y9x4YskzQo='
+const SEGREDO = process.env.SEGREDO
 
 connect()
 
-
+// listar todos os pacientes
 const getAll = (request, response) => {
   pacientesModel.find((error, pacientes) => {
     if (error) {
@@ -19,6 +19,7 @@ const getAll = (request, response) => {
   })
 }
 
+// listar paciente por id
 const getById = (request, response) => {
   const id = request.params.id
 
@@ -35,6 +36,7 @@ const getById = (request, response) => {
   })
 }
 
+// adicionar paciente comum
 const add = (request, response) => {
   const senhaCriptografada = bcrypt.hashSync(request.body.senha)
   request.body.senha = senhaCriptografada
@@ -50,6 +52,7 @@ const add = (request, response) => {
   })
 }
 
+//adicionar administrador
 const addAdmin = (request, response) => {
   const senhaCriptografada = bcrypt.hashSync(request.body.senha)
   request.body.senha = senhaCriptografada
@@ -65,6 +68,7 @@ const addAdmin = (request, response) => {
   })
 }
 
+// remover paciente
 const remove = (request, response) => {
   const id = request.params.id
 
@@ -81,6 +85,7 @@ const remove = (request, response) => {
   })
 }
 
+// atualizar paciente
 const update = (request, response) => {
   const id = request.params.id
   const pacienteUpdate = request.body
@@ -104,6 +109,7 @@ const update = (request, response) => {
   )
 }
 
+// adicionar remedios
 const addRemedio = async (request, response) => {
   const pacienteId = request.params.pacienteId
   const remedio = request.body
@@ -123,6 +129,7 @@ const addRemedio = async (request, response) => {
   })
 }
 
+// listar todos os remedios de um determinado paciente
 const getRemedios = async (request, response) => {
   const pacienteId = request.params.id
   await pacientesModel.findById(pacienteId, (error, paciente) => {
@@ -138,6 +145,7 @@ const getRemedios = async (request, response) => {
   })
 }
 
+// atualizar remedio
 const updateRemedio = (request, response) => {
   const pacienteId = request.params.pacienteId
   const remedioId = request.params.remedioId
@@ -171,6 +179,7 @@ const updateRemedio = (request, response) => {
   )
 }
 
+//  listar um unico remedio
 const getRemedioById = async (request, response) => {
   const pacienteId = request.params.pacienteId
   const remedioId = request.params.remedioId
@@ -198,6 +207,7 @@ const removeRemedio = async (request, response) => {
 
 }
 
+// verificar se o remedio está na hora de ser consumido
 const proximoConsumo = async (request, response) => {
     const pacienteId = request.params.pacienteId
     const remedioId = request.params.remedioId
@@ -235,7 +245,8 @@ const proximoConsumo = async (request, response) => {
     }
 }
 
-const estoqueRemedio = async (request, response) => {
+// verificar se o remedio acabou no estoque
+const remediosSemEstoque = async (request, response) => {
   const pacienteId = request.params.pacienteId
   const paciente = await pacientesModel.findById(pacienteId)
   const remedio = paciente.remedios.find(remedio => remedio.totalEstoqueRemedio == 0)
@@ -245,7 +256,7 @@ const estoqueRemedio = async (request, response) => {
   }
   return response.status(200).send("Todos os remédios possuem itens no estoque");
 }
-
+  //  o consumir remedio altera a data do ultimo consumo e o total em estoque
   const consumir = async (request, response) => {
     const pacienteId = request.params.pacienteId
     const remedioId = request.params.remedioId
@@ -255,7 +266,7 @@ const estoqueRemedio = async (request, response) => {
     const options = {new: true}
   
     let novoTotal = remedio.totalEstoqueRemedio - remedio.qtdConsumoRemedio;
-    let dataAtual = moment().subtract(3, "hours").format()
+    let dataAtual = moment().utcOffset(-3).format()
     console.log(dataAtual);
     console.log(remedio.totalEstoqueRemedio >= remedio.qtdConsumoRemedio);
 
@@ -326,7 +337,6 @@ module.exports = {
   proximoConsumo,
   consumir,
   removeRemedio,
-  estoqueRemedio,
-
+  remediosSemEstoque,
   login
 }

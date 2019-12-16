@@ -10,7 +10,7 @@ app.use(bodyParser.json())
 app.use('/pacientes', pacientes)
 
 app.get('/', (request, response) => {
-  response.send('Olá, mundo!')
+  response.send('Controle de remedios.')
 })
 
 app.listen(PORT)
