@@ -2,6 +2,7 @@ const { connect } = require('../models/Repository')
 const pacientesModel = require('../models/PacientesSchema')
 const { remediosModel } = require('../models/RemediosSchema')
 const moment = require('moment');
+const tz = require('moment-timezone');
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const SEGREDO = process.env.SEGREDO
@@ -223,16 +224,15 @@ const proximoConsumo = async (request, response) => {
       return response.status(200).send('remédio não encontrado')
     }
 
-    let intervalo = remedio.intervalo * 60;
-    let dataAtual = moment().subtract(1, "hours");
-    console.log("hora atual: " + dataAtual.format());
+    let dataAtual = moment().tz('America/Sao_Paulo')
+    console.log(dataAtual)
     let dataUltimoConsumo = moment(remedio.ultimoConsumo);
     console.log("dataUltimoConsumo: " + dataUltimoConsumo.format())
-  
+    let intervalo = remedio.intervalo * 60;
     let diffHora = dataAtual.diff(dataUltimoConsumo,'minutes')
-    console.log(diffHora)
-    let proxConsumo = dataUltimoConsumo.add(intervalo, 'minutes').format('HH:mm:ss')
-
+    console.log(diffHora +' '+ intervalo )
+    let proxConsumo = dataUltimoConsumo.add(intervalo, 'minutes').format('HH:mm:ss')    
+    
     if(diffHora > intervalo){
 
       return response.status(200).send({retorno: -1, msg: "Seu remédio está atrasado, você deveria ter tomado: " + proxConsumo})
@@ -241,8 +241,9 @@ const proximoConsumo = async (request, response) => {
       return response.status(200).send({retorno: 0, msg: "Ainda não está na hora de tomar o remédio. Você deve tomar ás: " + proxConsumo })
     } 
     else{
-      return response.status(200).send({retorno: 1, msg: "Está na hora de tomar seu remédio"})
+      return response.status(400).send({retorno: 1, msg: "Está na hora de tomar seu remédio"})
     }
+
 }
 
 // verificar se o remedio acabou no estoque
@@ -266,7 +267,7 @@ const remediosSemEstoque = async (request, response) => {
     const options = {new: true}
   
     let novoTotal = remedio.totalEstoqueRemedio - remedio.qtdConsumoRemedio;
-    let dataAtual = moment().utcOffset(-3).format()
+    let dataAtual = moment().subtract(3, 'hours').format()
     console.log(dataAtual);
     console.log(remedio.totalEstoqueRemedio >= remedio.qtdConsumoRemedio);
 
