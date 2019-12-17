@@ -1,8 +1,7 @@
 const { connect } = require('../models/Repository')
 const pacientesModel = require('../models/PacientesSchema')
 const { remediosModel } = require('../models/RemediosSchema')
-const moment = require('moment');
-const tz = require('moment-timezone');
+const moment = require('moment')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const SEGREDO = process.env.SEGREDO
@@ -224,9 +223,9 @@ const proximoConsumo = async (request, response) => {
       return response.status(200).send('remédio não encontrado')
     }
 
-    let dataAtual = moment().tz('America/Sao_Paulo')
-    console.log(dataAtual)
-    let dataUltimoConsumo = moment(remedio.ultimoConsumo);
+    let dataAtual = moment()
+    console.log('dataAtual' + dataAtual.format())
+    let dataUltimoConsumo = moment(remedio.ultimoConsumo)
     console.log("dataUltimoConsumo: " + dataUltimoConsumo.format())
     let intervalo = remedio.intervalo * 60;
     let diffHora = dataAtual.diff(dataUltimoConsumo,'minutes')
