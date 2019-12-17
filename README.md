@@ -2,7 +2,7 @@
 
 Pode ser difícil lembrar o horário prescrito, particularmente quando se tomam vários medicamentos em horários diferentes. O esquecimento dos medicamentos podem causar efeito colateral dependendo da situação do paciente.
 
-**Objetivo deste projeto**
+**Objetivo deste projeto**  
 API terá como objetivo criar o controle de remédios para os paciente, amenizado o esquecimento do consumo dos medicamentos.
 
 **Bibliotecas utilizadas: **
@@ -39,19 +39,34 @@ Após clonar, acesse o novo diretório criado e excute a instalação das depend
 `   npm start      `
 `   nodemon app.js      `
 
-**Endpoints**
-GET    pacientes/ 
-POST   pacientes/  
-POST   pacientes/admin  
-GET    pacientes/:id   
-PATCH  pacientes/:id   
-DELETE pacientes/:id 
-POST   pacientes/:pacienteId/remedios 
-GET    pacientes/:id/remedios
-PATCH  pacientes/:pacienteId/remedios/:remedioId  
-GET    pacientes/:pacienteId/remedios/:remedioId  
-GET    pacientes/:pacienteId/remediosSemEstoque  
-GET    pacientes/:pacienteId/remedios/:remedioId/ProximoConsumo  
-PATCH  pacientes/:pacienteId/remedios/:remedioId/consumir  
-DELETE pacientes/:pacienteId/remedios/:remedioId  
-POST   pacientes/login
+**Endpoints**  
+  
+GET    pacientes/   => lISTA PACIENTES
+  
+POST   pacientes/  => CRIAR USUARIO COMUM
+  
+POST   pacientes/admin => CRIAR USUARIO ADMINISTRADOR
+  
+GET    pacientes/:id   => LISTAR PACIENTE POR ID
+  
+PATCH  pacientes/:id   => ATUALIZAR PACIENTE POR ID
+  
+DELETE pacientes/:id   => DELETAR PACIENTE POR ID
+  
+POST   pacientes/:pacienteId/remedios   => CRIAR REMEDIO POR PACIENTE
+  
+GET    pacientes/:id/remedios  => LISTAR REMEDIO POR PACIENTE
+  
+PATCH  pacientes/:pacienteId/remedios/:remedioId  => ATUALIZAR REMEDIO POR PACIENTE
+  
+GET    pacientes/:pacienteId/remedios/:remedioId  => LISTAR REMEDIO POR ID
+  
+GET    pacientes/:pacienteId/remediosSemEstoque  => REMEDIOS COM ESTOQUE ZERADO
+  
+GET    pacientes/:pacienteId/remedios/:remedioId/ProximoConsumo  => LISTAR SE O REMEDIO DEVE DEVE SER CONSUMIDO
+  
+PATCH  pacientes/:pacienteId/remedios/:remedioId/consumir  => CONSUMIR REMEDIO POR ID
+  
+DELETE pacientes/:pacienteId/remedios/:remedioId    => DELETAR REMEDIO POR PACIENTE
+  
+POST   pacientes/login => REALIZAR LOGIN
