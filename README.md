@@ -5,7 +5,7 @@ Pode ser difícil lembrar o horário prescrito, particularmente quando se tomam 
 **Objetivo deste projeto**  
 API terá como objetivo criar o controle de remédios para os paciente, amenizado o esquecimento do consumo dos medicamentos.
 
-**Bibliotecas utilizadas: **
+**Bibliotecas utilizadas:**
 
 - moment
 - bcrytjs
@@ -31,7 +31,7 @@ Será necessario clonar este repositório:
   
  **2º** Digite o comando:  
    
-` git clone https://github.com/AnaGFranco/reprograma-projetopratico-backend.git   `
+` git clone https://github.com/AnaGFranco/projeto-final-reprograma.git   `
 
 Após clonar, acesse o novo diretório criado e excute a instalação das dependencias com o comando:
   
