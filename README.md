@@ -41,32 +41,32 @@ Após clonar, acesse o novo diretório criado e excute a instalação das depend
 
 **Endpoints**  
   
-GET    pacientes/   => lISTA PACIENTES
+GET    pacientes/ => lISTA PACIENTES
   
-POST   pacientes/  => CRIAR USUARIO COMUM
+POST   pacientes/ => CRIAR USUARIO COMUM
   
 POST   pacientes/admin => CRIAR USUARIO ADMINISTRADOR
   
-GET    pacientes/:id   => LISTAR PACIENTE POR ID
+GET    pacientes/:id => LISTAR PACIENTE POR ID
   
-PATCH  pacientes/:id   => ATUALIZAR PACIENTE POR ID
+PATCH  pacientes/:id => ATUALIZAR PACIENTE POR ID
   
-DELETE pacientes/:id   => DELETAR PACIENTE POR ID
+DELETE pacientes/:id => DELETAR PACIENTE POR ID
   
-POST   pacientes/:pacienteId/remedios   => CRIAR REMEDIO POR PACIENTE
+POST   pacientes/:pacienteId/remedios => CRIAR REMEDIO POR PACIENTE
   
-GET    pacientes/:id/remedios  => LISTAR REMEDIO POR PACIENTE
+GET    pacientes/:id/remedios => LISTAR REMEDIO POR PACIENTE
   
-PATCH  pacientes/:pacienteId/remedios/:remedioId  => ATUALIZAR REMEDIO POR PACIENTE
+PATCH  pacientes/:pacienteId/remedios/:remedioId => ATUALIZAR REMEDIO POR PACIENTE
   
-GET    pacientes/:pacienteId/remedios/:remedioId  => LISTAR REMEDIO POR ID
+GET    pacientes/:pacienteId/remedios/:remedioId => LISTAR REMEDIO POR ID
   
-GET    pacientes/:pacienteId/remediosSemEstoque  => REMEDIOS COM ESTOQUE ZERADO
+GET    pacientes/:pacienteId/remediosSemEstoque => REMEDIOS COM ESTOQUE ZERADO
   
-GET    pacientes/:pacienteId/remedios/:remedioId/ProximoConsumo  => LISTAR SE O REMEDIO DEVE DEVE SER CONSUMIDO
+GET    pacientes/:pacienteId/remedios/:remedioId/ProximoConsumo  => LISTAR SE O REMEDIO DEVE SER CONSUMIDO
   
 PATCH  pacientes/:pacienteId/remedios/:remedioId/consumir  => CONSUMIR REMEDIO POR ID
   
-DELETE pacientes/:pacienteId/remedios/:remedioId    => DELETAR REMEDIO POR PACIENTE
+DELETE pacientes/:pacienteId/remedios/:remedioId => DELETAR REMEDIO POR PACIENTE
   
 POST   pacientes/login => REALIZAR LOGIN
