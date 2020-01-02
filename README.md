@@ -35,9 +35,9 @@ Será necessario clonar este repositório:
 
 Após clonar, acesse o novo diretório criado e excute a instalação das dependencias com o comando:
   
-`   npm install      `
-`   npm start      `
-`   nodemon app.js      `
+`   npm install      `  
+`   npm start      `  
+`   nodemon app.js      `  
 
 **Endpoints**  
   
